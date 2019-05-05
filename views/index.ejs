@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title><%=title%></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/botui.min.css" />
+  <link rel="stylesheet" href="css/botui-theme-default.css" />
+  <link rel="stylesheet" href="css/mc-style.css" />
+  <link href="/css/card-js.min.css" rel="stylesheet" type="text/css" />
+  <style>
+  .botui-message-content {
+    padding: 7px 13px;
+    border-radius: 15px;
+    color: #000000;
+    background-color: #ffbf00;
+  }
+  .profil>img.agent {
+    content: url('img/cashier.png');
+    border-radius: 50%;
+  }
+  .profil>img {
+    width: 46px;
+    height: 46px;
+    border: 2px solid #e8e8e8;
+  }
+  .botui-actions-buttons{
+    text-align: center;
+  }
+  .panel {
+    background-color: #F5F5F7;
+    border: 1px solid #ddd;
+    padding: 20px;
+    display: block;
+    width: 270px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+  }
+  .btn {
+    background: rgb(68,175,231); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(68,175,231,1) 0%, rgba(49,152,223,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(68,175,231,1) 0%,rgba(49,152,223,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(68,175,231,1) 0%,rgba(49,152,223,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#44afe7', endColorstr='#3198df',GradientType=0 );
+    color: #fff;
+    display: block;
+    width: 100%;
+    border: 1px solid rgba(46, 86, 153, 0.0980392);
+    border-bottom-color: rgba(46, 86, 153, 0.4);
+    border-top: 0;
+    border-radius: 4px;
+    font-size: 17px;
+    text-shadow: rgba(46, 86, 153, 0.298039) 0px -1px 0px;
+    line-height: 34px;
+    -webkit-font-smoothing: antialiased;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  .btn:hover {
+    cursor: pointer;
+  }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-light bg-light nav-white">
+    <a class="navbar-brand" href=""><img src="img/logo.png" class="logo"></img></a>
+    <a href="" class="icon">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </a>
+  </nav>
+  <%# Bot Declaration%>
+  <div class="botui-app-container" id="api-bot">
+    <bot-ui></bot-ui>
+  </div>
+  <div id="PanelPay" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form id="subscription-form">
+              <div class="card-js stripe" data-stripe="true"></div>
+            </form>
+                  <button id="BtnPay"class="btn">Pagar</button>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# JS STUFF%>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <script src="js/vue.min.js"></script>
+  <script src="js/botui.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/js/card-js.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+ <%# Edit the Conversation from Convo.js%>
+  <script>
+  var totalPago =0;
+  $(document).ready(function(){
+    $("#BtnPay").click(function(){
+      totalPago = "Q "+totalPago;
+      var pago = {
+        value: totalPago.toString()
+      }
+      sendDialog(pago)
+    $('#PanelPay').modal("hide");
+    });
+
+    //$("#PanelPay").show();
+  });
+
+  var socket = io.connect('http://localhost:8010');
+  var botui = new BotUI('api-bot');
+  getLocation();
+  function getLocation() {
+    if (navigator.geolocation) {
+      return navigator.geolocation.getCurrentPosition(staredBOT);
+    } else {
+      console.log("Geolocation is not supported by this browser.")
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+  function setLocation(position) {
+    console.log(position)
+    return {
+      latitude : position.coords.latitude,
+      longitude : position.coords.longitude
+    }
+  }
+
+
+function Dist(lat1, lon1, lat2, lon2){
+    rad = function(x) {return x*Math.PI/180;}
+    var R     = 6378.137;                     //Radio de la tierra en km
+    var dLat  = rad( lat2 - lat1 );
+    var dLong = rad( lon2 - lon1 );
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(dLong/2) * Math.sin(dLong/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c;
+    return d.toFixed(3);                      //Retorna tres decimales
+}
+
+function staredBOT(position){
+    var distanciaMenor= null;
+    $.getJSON('https://mcgeo-804d3.firebaseio.com/fields.json', function(data) {
+      jQuery.each(data, function(i, val) {
+        var coords = val.geoPointValue;
+        var latLng = {
+          lat : coords['latitude'],
+          long : coords['longitude']
+        }
+        var dist = Dist(position.coords.latitude,position.coords.longitude,latLng.lat,latLng.long)
+        if(distanciaMenor==null) {
+          distanciaMenor={
+            distancia: dist,
+            nombre: val.nombre
+          }
+        }
+        else if(distanciaMenor.distancia>dist) {
+          distanciaMenor={
+            distancia: dist,
+            nombre: val.nombre
+          }
+        }
+
+      });
+      botui.message.add({ // show a message
+        human: false,
+        photo: 'img/cashier.png',
+        content: '¡Hola! el restaurante más cercano es '+ distanciaMenor.nombre+' soy tu ayudante virtual '
+      }).then(function () {
+        botui.message.add({ // show a message
+          human: false,
+          delay: 2000,
+          loading: true,
+          photo: 'img/cashier.png',
+          content: '¿Quieres comprar una Romana Tocino? ![Romana Tocino](https://mcdonalds.com.gt/wp-content/uploads/2019/02/04WebSiteCorporativo_640x640-1.png)'
+        })
+      }).then(function () { // wait till its shown
+        return botui.action.button({
+          delay: 2000,
+          action: [
+            { // show only one button
+              text: 'Sí',
+              value: 'sí quiero romana tocino'
+            },
+            { // show only one button
+              text: 'No',
+              value: 'no'
+            },
+          ]
+        })
+      }).then(function (res) { // wait till its shown
+        sendDialog(res);
+      });
+    });
+  }
+
+
+  function constructMessage(data){
+    if(data.intentName=='Flujo.Compra.Romana.Tocino'){
+      var cantidaOpciones=0;
+      var opciones = data.parameters.opcion;
+      for (var i = 0; i < data.parameters.opcion.length; i++) {
+        if(opciones[i].number) cantidaOpciones+=opciones[i].number
+        else cantidaOpciones+=1
+      }
+    }
+    if(data.intentName=='No.Romana'){
+      botui.message.add({
+        content: data.response,
+        delay: 500,
+      })
+      .then(function () { // wait till its shown
+        return botui.action.button({
+          action: [
+            { // show only one button
+              text: 'Sí quiero Romana Tocino',
+              value: 'sí'
+            },
+            { // show only one button
+              text: 'Quiero pedir algo más',
+              value: 'otros productos'
+            },
+          ]
+        })
+      }).then(function (res) { // wait till its shown
+        sendDialog(res)
+      })
+    }
+    else if(cantidaOpciones!=data.parameters.cantidad && data.parameters.opcion.length!=0 ){
+      console.log(data.parameters.opcion)
+      botui.message.add({
+        photo: 'img/cashier.png',
+        content: "Podrías favor especificar la cantidad de tus hamburguesas con pollo grilled, crispy y carne",
+        delay: 500,
+      })
+      .then(function () { // wait till its shown
+        return botui.action.text({ // show 'text' action
+        action: {
+          placeholder: ''
+        }
+      });
+    }).then(function (res) { // wait till its shown
+      sendDialog(res)
+    })
+    }
+    else if(data.parameters.metodoPago=='tarjeta'&&data.parameters.pago==''){
+      //$("#PanelPay").show();
+      $('#PanelPay').modal();
+      totalPago = data.parameters.cantidad*46;
+      $('#BtnPay').html('Pagar Q'+totalPago);
+    }
+    else{
+      botui.message.add({
+        photo: 'img/cashier.png',
+        content: data.response,
+        delay: 500,
+      })
+      .then(function () { // wait till its shown
+        return botui.action.text({ // show 'text' action
+        action: {
+          placeholder: ''
+        }
+      });
+    }).then(function (res) { // wait till its shown
+      if(data.parameters.cantidad && data.parameters.opcion.length==0){
+        var str = res.value;
+        str = str.toLowerCase();
+        str = str.replace(new RegExp('otra|otro',"g"), "1");
+        str = str.replace(new RegExp('de',"g"), "");
+        res = {
+          value:str
+        }
+      }
+      sendDialog(res)
+
+    })
+  }
+
+}
+
+function sendDialog(res){
+  socket.emit('fromClient', { client : res.value });
+}
+
+
+socket.on('fromServer', function (data) { // recieveing a reply from server.
+  constructMessage(data)
+});
+
+
+
+</script>
+</body>
+</html>

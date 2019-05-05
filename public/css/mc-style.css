@@ -1,0 +1,134 @@
+@font-face {
+  font-family: 'lovinBlack';
+  /* black */
+  src: url("../fonts/lovin-black-webfont.woff2") format("woff2"), url("../fonts/lovin-black-webfont.woff") format("woff");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'lovinBold';
+  /* bold */
+  src: url("../fonts/lovin-bold-webfont.woff2") format("woff2"), url("../fonts/lovin-bold-webfont.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'lovinMedium';
+  /* medium */
+  src: url("../fonts/lovin-medium-webfont.woff2") format("woff2"), url("../fonts/lovin-medium-webfont.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'lovinRegular';
+  /* regular */
+  src: url("../fonts/lovin-regular-webfont.woff2") format("woff2"), url("../fonts/lovin-regular-webfont.woff") format("woff");
+  font-weight: 100;
+  font-style: normal;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y:hidden;
+}
+.img-promo{
+  width: 45%;
+  float: left;
+}
+#map {
+  height: 90%;
+}
+.nav-white{
+ z-index: 100;
+ background-color:white;
+ margin-bottom: 0 !important;
+}
+.promo{
+ position: absolute;
+ top:0;
+ width:100%;
+}
+.icon{
+    position: relative;
+    float: right;
+    padding: 9px 10px;
+    margin-top: 8px;
+    margin-right: 15px;
+    margin-bottom: 8px;
+    background-color: transparent;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.icon-bar {
+    margin-bottom: 10%;
+    background-color: #ffc416;
+    display: block;
+    width: 22px;
+    height: 4px;
+    border-radius: 1px;
+}
+  .img-mobile{
+    display:none;
+  }
+  .img-desktop{
+    display:block;
+  }
+@media only screen and (max-width: 600px) {
+  .img-promo{
+    width: 100%;
+    height: auto;
+    float: none;
+  }
+  #map {
+    height: 55%;
+  }
+  .img-mobile{
+    display:block;
+  }
+  .img-desktop{
+    display:none;
+  }
+}
+.logo{
+    width: 50px;
+    margin-top: -10px;
+}
+
+#iw-container .iw-title {
+	font-family: 'Open Sans Condensed', sans-serif;
+	font-size: 22px;
+	font-weight: 400;
+	padding: 10px;
+	background-color: #ffc416;
+	color: black;
+	margin: 0;
+	border-radius: 2px 2px 0 0;
+}
+#iw-container .iw-content {
+	font-size: 13px;
+	line-height: 18px;
+	font-weight: 400;
+	margin-right: 1px;
+	padding: 15px 5px 20px 15px;
+
+
+}
+.iw-content img {
+	float: right;
+	margin: 0 5px 5px 10px;
+}
+.iw-subTitle {
+	font-size: 16px;
+	font-weight: 700;
+	padding: 5px 0;
+}
+.modal-custom{
+  background-color: #ffc416;
+  color: black;
+  text-align: center;
+}
