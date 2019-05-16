@@ -13,7 +13,7 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 var conn = function() {
   app.use(express.static(path.join(__dirname, 'public')))
-  //app.listen(8010, () => console.log(`Listening on 8010`))
+  app.listen(8010, () => console.log(`Listening on 8010`))
   app.get('/', function(req, res, next) {
     res.render('index', { title: 'botUI_dialogflow' });
   });
